@@ -3,8 +3,8 @@ from htmlnode import *
 from helper_functions import *
 
 def main():
-    node = TextNode("This is text with a ![rick roll](https://i.imgur.com/aKa0qIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.NORMAL)
-    test = split_nodes_image([node])
+    text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    test = text_to_textnodes(text)
     print(test)
 
     # tn = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")

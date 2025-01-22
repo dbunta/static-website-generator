@@ -100,3 +100,12 @@ def split_nodes_link(old_nodes):
                 new_nodes.append(TextNode(alt_text[0][1:-1], TextType.LINKS, url[0][1:-1]))
                 i += 1
     return new_nodes
+
+def text_to_textnodes(text):
+    # This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)
+    text_nodes = split_nodes_delimiter([TextNode(text, TextType.NORMAL)], "**", TextType.BOLD)
+    text_nodes = split_nodes_delimiter(text_nodes, "*", TextType.ITALIC)
+    text_nodes = split_nodes_delimiter(text_nodes, "`", TextType.CODE)
+    text_nodes = split_nodes_image(text_nodes)
+    text_nodes = split_nodes_link(text_nodes)
+    return text_nodes
