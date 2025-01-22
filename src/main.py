@@ -1,10 +1,15 @@
 from textnode import *
 from htmlnode import *
+from helper_functions import *
 
 def main():
-    tn = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    hn = HtmlNode(props={"prop1":"chester", "prop2":3})
-    print(hn.props_to_html())
+    node = TextNode("This is text with a ![rick roll](https://i.imgur.com/aKa0qIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.NORMAL)
+    test = split_nodes_image([node])
+    print(test)
+
+    # tn = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
+    # hn = HtmlNode(props={"prop1":"chester", "prop2":3})
+    # print(hn.props_to_html())
 
 def text_node_to_html_node(text_node):
     match text_node.text_type:
