@@ -5,7 +5,7 @@ from helper_functions import *
 def main():
     text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
     test = text_to_textnodes(text)
-    print(test)
+    # print(test)
 
     # tn = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
     # hn = HtmlNode(props={"prop1":"chester", "prop2":3})

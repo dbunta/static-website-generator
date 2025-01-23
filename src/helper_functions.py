@@ -30,7 +30,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         arr = node.text.split(delimiter)
         for i in range(0, len(arr)): 
             if i % 2 == 0:
-                new_nodes.append(TextNode(arr[i], TextType.NORMAL))
+                new_nodes.append(TextNode(arr[i], node.text_type))
             else:
                 new_nodes.append(TextNode(arr[i], text_type))
     return new_nodes
@@ -76,7 +76,7 @@ def split_nodes_image(old_nodes):
         arr = re.split(r_search, node.text)
         i = 0
         for j in range(0, len(arr)):
-            new_nodes.append(TextNode(arr[j], TextType.NORMAL))
+            new_nodes.append(TextNode(arr[j], node.text_type, node.url))
             if j < len(arr)-1:
                 alt_text = re.findall(r"\[.*?\]", matches[i])
                 url = re.findall(r"\(.*?\)", matches[i])
@@ -87,13 +87,13 @@ def split_nodes_image(old_nodes):
 def split_nodes_link(old_nodes):
     # text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
     new_nodes = []
-    r_search = r"\[.*?\]\(.*?://.*?\..*?\..*?\)"
+    r_search = r"\[.*?\]\(.*?://.*?\..*?\)"
     for node in old_nodes:
         matches = re.findall(r_search, node.text)
         arr = re.split(r_search, node.text)
         i = 0
         for j in range(0, len(arr)):
-            new_nodes.append(TextNode(arr[j], TextType.NORMAL))
+            new_nodes.append(TextNode(arr[j], node.text_type, node.url))
             if j < len(arr)-1:
                 alt_text = re.findall(r"\[.*?\]", matches[i])
                 url = re.findall(r"\(.*?\)", matches[i])
@@ -103,9 +103,15 @@ def split_nodes_link(old_nodes):
 
 def text_to_textnodes(text):
     # This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)
-    text_nodes = split_nodes_delimiter([TextNode(text, TextType.NORMAL)], "**", TextType.BOLD)
+    text_nodes = [TextNode(text, TextType.NORMAL)]
+    text_nodes = split_nodes_delimiter(text_nodes, "**", TextType.BOLD)
     text_nodes = split_nodes_delimiter(text_nodes, "*", TextType.ITALIC)
     text_nodes = split_nodes_delimiter(text_nodes, "`", TextType.CODE)
     text_nodes = split_nodes_image(text_nodes)
     text_nodes = split_nodes_link(text_nodes)
     return text_nodes
+
+def markdown_to_blocks(markdown):
+    lines = markdown.split('\n\n')
+    blocks = list(map(lambda x: x.strip(), lines)) 
+    return blocks

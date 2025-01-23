@@ -139,45 +139,61 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
         self.assertEqual(new_nodes[3].text_type, TextType.LINKS)
         self.assertEqual(new_nodes[3].url, "https://www.youtube.com/@bootdotdev")
 
-def test_text_to_textnodes(self):
-    text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-    text_nodes = text_to_textnodes(text)
-    self.assertEqual(text_nodes[0].text, "This is ")
-    self.assertEqual(text_nodes[0].text_type, TextType.NORMAL)
-    self.assertEqual(text_nodes[0].url, None)
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        text_nodes = text_to_textnodes(text)
+        self.assertEqual(text_nodes[0].text, "This is ")
+        self.assertEqual(text_nodes[0].text_type, TextType.NORMAL)
+        self.assertEqual(text_nodes[0].url, None)
 
-    self.assertEqual(text_nodes[1].text, "text")
-    self.assertEqual(text_nodes[1].text_type, TextType.BOLD)
-    self.assertEqual(text_nodes[1].url, None)
+        self.assertEqual(text_nodes[1].text, "text")
+        self.assertEqual(text_nodes[1].text_type, TextType.BOLD)
+        self.assertEqual(text_nodes[1].url, None)
 
-    self.assertEqual(text_nodes[2].text, " with an ")
-    self.assertEqual(text_nodes[2].text_type, TextType.NORMAL)
-    self.assertEqual(text_nodes[2].url, None)
+        self.assertEqual(text_nodes[2].text, " with an ")
+        self.assertEqual(text_nodes[2].text_type, TextType.NORMAL)
+        self.assertEqual(text_nodes[2].url, None)
 
-    self.assertEqual(text_nodes[3].text, "italic")
-    self.assertEqual(text_nodes[3].text_type, TextType.ITALIC)
-    self.assertEqual(text_nodes[3].url, None)
+        self.assertEqual(text_nodes[3].text, "italic")
+        self.assertEqual(text_nodes[3].text_type, TextType.ITALIC)
+        self.assertEqual(text_nodes[3].url, None)
 
-    self.assertEqual(text_nodes[4].text, " word and a ")
-    self.assertEqual(text_nodes[4].text_type, TextType.NORMAL)
-    self.assertEqual(text_nodes[4].url, None)
+        self.assertEqual(text_nodes[4].text, " word and a ")
+        self.assertEqual(text_nodes[4].text_type, TextType.NORMAL)
+        self.assertEqual(text_nodes[4].url, None)
 
-    self.assertEqual(text_nodes[5].text, "code block")
-    self.assertEqual(text_nodes[5].text_type, TextType.CODE)
-    self.assertEqual(text_nodes[5].url, None)
+        self.assertEqual(text_nodes[5].text, "code block")
+        self.assertEqual(text_nodes[5].text_type, TextType.CODE)
+        self.assertEqual(text_nodes[5].url, None)
 
-    self.assertEqual(text_nodes[6].text, " and an ")
-    self.assertEqual(text_nodes[6].text_type, TextType.NORMAL)
-    self.assertEqual(text_nodes[6].url, None)
+        self.assertEqual(text_nodes[6].text, " and an ")
+        self.assertEqual(text_nodes[6].text_type, TextType.NORMAL)
+        self.assertEqual(text_nodes[6].url, None)
 
-    self.assertEqual(text_nodes[7].text, "obi wan image")
-    self.assertEqual(text_nodes[7].text_type, TextType.IMAGES)
-    self.assertEqual(text_nodes[7].url, "https://i.imgur.com/fJRm4Vk.jpeg")
+        self.assertEqual(text_nodes[7].text, "obi wan image")
+        self.assertEqual(text_nodes[7].text_type, TextType.IMAGES)
+        self.assertEqual(text_nodes[7].url, "https://i.imgur.com/fJRm4Vk.jpeg")
 
-    self.assertEqual(text_nodes[8].text, " and a ")
-    self.assertEqual(text_nodes[8].text_type, TextType.NORMAL)
-    self.assertEqual(text_nodes[8].url, None)
+        self.assertEqual(text_nodes[8].text, " and a ")
+        self.assertEqual(text_nodes[8].text_type, TextType.NORMAL)
+        self.assertEqual(text_nodes[8].url, None)
 
-    self.assertEqual(text_nodes[9].text, "link")
-    self.assertEqual(text_nodes[9].text_type, TextType.LINKS)
-    self.assertEqual(text_nodes[9].url, "https://boot.dev")
+        self.assertEqual(text_nodes[9].text, "link")
+        self.assertEqual(text_nodes[9].text_type, TextType.LINKS)
+        self.assertEqual(text_nodes[9].url, "https://boot.dev")
+
+    def test_markdown_to_blocks(self):
+        markdown = """# This is a heading
+
+            This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+            * This is the first list item in a list block
+            * This is a list item
+            * This is another list item"""
+
+        blocks = markdown_to_blocks(markdown)
+        self.assertEqual(blocks[0], "# This is a heading")
+        self.assertEqual(blocks[1], "This is a paragraph of text. It has some **bold** and *italic* words inside of it.")
+        self.assertEqual(blocks[2], """* This is the first list item in a list block
+            * This is a list item
+            * This is another list item""")
