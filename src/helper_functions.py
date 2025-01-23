@@ -115,3 +115,37 @@ def markdown_to_blocks(markdown):
     lines = markdown.split('\n\n')
     blocks = list(map(lambda x: x.strip(), lines)) 
     return blocks
+
+def block_to_blocktype(block):
+    if re.findall(r"^#{1,6}.*", block):
+        return "heading"
+    if re.findall(r"^`{3}.*`{3}$", block):
+        return "code"
+
+    lines = block.split('\r')
+    number_quotes = 0
+    number_ul = 0
+    number_ol = 0
+    for line in lines:
+        if line.startswith(">"):
+            number_quotes += 1
+        if line.startswith("* ") or line.startswith("- "):
+            number_ul += 1
+        if line.startswith(f"{number_ol+1}. "):
+            number_ol += 1
+    
+    if len(lines) == number_quotes:
+        return "quote"
+    if len(lines) == number_ul:
+        return "unordered_list"
+    if len(lines) == number_ol:
+        return "ordered_list"
+
+    return "paragraph"
+
+# paragraph
+# heading
+# code
+# quote
+# unordered_list
+# ordered_list

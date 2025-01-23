@@ -197,3 +197,31 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
         self.assertEqual(blocks[2], """* This is the first list item in a list block
             * This is a list item
             * This is another list item""")
+    
+    def test_block_to_blocktype_heading(self):
+        self.assertEqual(block_to_blocktype("# this is a heading"), "heading")
+
+    def test_block_to_blocktype_code(self):
+        self.assertEqual(block_to_blocktype("``` this is code ```"), "code")
+
+    def test_block_to_blocktype_quote(self):
+        block = """> this is quote line 1
+        > this is quote line 2
+        """
+        self.assertEqual(block_to_blocktype(block), "quote")
+
+    def test_block_to_blocktype_unordered_list(self):
+        block = """* this is quote line 1
+        - this is quote line 2
+        """
+        self.assertEqual(block_to_blocktype(block), "unordered_list")
+
+    def test_block_to_blocktype_ordered_list(self):
+        block = """1. this is quote line 1
+        2. this is quote line 2
+        """
+        self.assertEqual(block_to_blocktype(block), "ordered_list")
+
+    def test_block_to_blocktype_paragraph(self):
+        self.assertEqual(block_to_blocktype("this is a paragraph"), "paragraph")
+
