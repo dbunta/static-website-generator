@@ -1,6 +1,7 @@
 import re
 from textnode import *
 from leafnode import *
+from parentnode import *
 
 def text_node_to_html_node(text_node):
     match text_node.text_type:
@@ -143,9 +144,77 @@ def block_to_blocktype(block):
 
     return "paragraph"
 
-# paragraph
-# heading
-# code
-# quote
-# unordered_list
-# ordered_list
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        blocktype = block_to_blocktype(block)
+        match blocktype:
+            case "heading":
+                headings = re.search(r"^#{1,6}", block).group(0)
+                tag = f"h{len(headings)}" 
+                text = re.sub("^#{1,6}", "", block).strip()
+                children = None
+            case "quote":
+                tag = "blockquote"
+                text = block.replace(">", "").strip()
+                children = None
+            case "code":
+                tag = "code"
+                text = block.strip("```")
+                props = None
+                children = None
+            case "unordered_list":
+                tag = "ul"
+                text = None
+                children = text_to_children_unordered_list(block)
+            case "ordered_list":
+                tag = "ol"
+                text = None
+                children = text_to_children_ordered_list(block)
+            case "paragraph":
+                tag = "div"
+                text = None
+                children = [text_to_children_paragraph(block)]
+    return HtmlNode(tag, text, children, None)
+
+    # split markdown into blocks with existing function
+    # loop over each block
+    # determine type of block with existing function
+    # based on type of block, createa a new htmlnode with proper data
+    # assign the proper child htmlnode objects to the block node. 
+    # text_to_children(text)
+    # takes a string of text and returns a list of htmlnodes that represent 
+    # the inline markdown using existing functions (textnode > htmlnode)
+    # make all block nodes children under a single parent html node (div) and return it
+
+def text_to_children_unordered_list(text):
+    lines = text.split('\n')
+    newlines = []
+    for line in lines:
+        textnode = text_to_textnodes(line.lstrip("- ").lstrip("* "))[0]
+        child = text_node_to_html_node(textnode)
+        parent = HtmlNode("li", None, [child], None)
+        newlines.append(parent)
+    return newlines
+
+def text_to_children_ordered_list(text):
+    lines = text.split('\n')
+    newlines = []
+    for line in lines:
+        textnode = text_to_textnodes(re.sub(r"^\d. ", "", line))[0]
+        child = text_node_to_html_node(textnode)
+        parent = HtmlNode("li", None, [child], None)
+        newlines.append(parent)
+    return newlines
+
+def text_to_children_paragraph(text):
+    textnodes = text_to_textnodes(text)
+    htmlnodes = map(text_node_to_html_node, textnodes)
+    # print(list(htmlnodes))
+    # textnode = text_to_textnodes(text)[0]
+    # htmlnode = text_node_to_html_node(textnode)
+    return HtmlNode(tag="p", children=list(htmlnodes))
+
+
+
+    

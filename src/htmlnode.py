@@ -13,10 +13,7 @@ class HtmlNode():
     def props_to_html(self):
         return f" {" ".join(list(map(lambda x: f"{x[0]}=\"{x[1]}\"",self.props.items())))}"
 
-    def __repr__(selef):
-        print(f"tag: {self.tag}")
-        print(f"value: {self.value}")
-        print(f"children: {self.children}")
-        print(f"props: {self.props}")
+    def __repr__(self):
+        return f"tag: {self.tag}\nvalue: {self.value}\nprops: {self.props}\nchildren: {self.children}"
 
 
