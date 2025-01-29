@@ -1,37 +1,39 @@
 from textnode import *
 from htmlnode import *
 from helper_functions import *
+from os import listdir, mkdir
+from os.path import exists, isfile, join
+from shutil import rmtree, copy
 
 def main():
-    markdown = "these are **bold** and *italic*"
-    actual = markdown_to_html_node(markdown)
-    print(actual)
+    copy_source_to_destination()
 
-    # tn = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    # hn = HtmlNode(props={"prop1":"chester", "prop2":3})
-    # print(hn.props_to_html())
-
-def text_node_to_html_node(text_node):
-    match text_node.text_type:
-        case TextType.NORMAL:
-            return LeafNode(text_node.text)
-        case TextType.BOLD:
-            return LeafNode(text_node.text, "b")
-        case TextType.ITALIC:
-            # return HtmlNode("i", text_node.text)
-            return LeafNode(text_node.text, "i")
-        case TextType.CODE:
-            # return HtmlNode("code", text_node.text)
-            return LeafNode(text_node.text, "code")
-        case TextType.LINKS:
-            # return HtmlNode("a", text_node.text, props={"href":text_node.url})
-            return LeafNode(text_node.text, "a", props={"href":text_node.url})
-        case TextType.IMAGES:
-            # return HtmlNode("img", props={"src":text_node.url, "alt":text_node.text})
-            return LeafNode(tag="img", props={"src":text_node.url, "alt":text_node.text})
-        case _:
-            raise Exception("invalid text type")
-    return ""
+# delete everything in public dir
+# copy all files/directories from static to public 
+# log src and dest file paths while copying
+def copy_source_to_destination(src="static",dst="public"):
+    # delete public and its contents
+    if exists(dst):
+        print(f"deleting {dst} and its contents")
+        rmtree(dst)
+    
+    # create public dir if does not exist
+    if not exists(dst):
+        print(f"creating {dst}")
+        mkdir(dst)
+    
+    # iterate all entities in dir and either copy to dst or recurse
+    for entity in listdir(src):
+        srcPath = join(src, entity)
+        dstPath = join(dst, entity)
+        if isfile(srcPath):
+            # copy to dst
+            print(f"copying {srcPath} to {dst}")
+            copy(srcPath, dst)
+        else:
+            # recurse
+            copy_source_to_destination(srcPath, dstPath)
+    return True
 
 
 main()
