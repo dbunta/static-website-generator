@@ -7,6 +7,7 @@ from shutil import rmtree, copy
 
 def main():
     copy_source_to_destination()
+    generate_page("./content/index.md", "./template.html", "./public/index.html")
 
 # delete everything in public dir
 # copy all files/directories from static to public 

@@ -2,6 +2,9 @@ import re
 from textnode import *
 from leafnode import *
 from parentnode import *
+from os import makedirs
+from os.path import exists, join
+
 
 def text_node_to_html_node(text_node):
     match text_node.text_type:
@@ -42,7 +45,8 @@ def extract_markdown_images(text):
     #print(extract_markdown_images(text))
     # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
     retval = []
-    r_search = r"!\[.*?\]\(.*?://.*?\..*?\..*?\)"
+    # r_search = r"!\[.*?\]\(.*?://.*?\..*?\..*?\)"
+    r_search = r"!\[.*?\]\(.*?\)"
     matches = re.findall(r_search, text)
     descriptions = list(map(lambda x: re.findall(r"\[.*?\]", x)[0], matches))
     links = list(map(lambda x: re.findall(r"\(.*?\)", x)[0], matches))
@@ -58,7 +62,8 @@ def extract_markdown_links(text):
     # print(extract_markdown_links(text))
     # [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
     retval = []
-    r_search = r"\[.*?\]\(.*?://.*?\..*?\..*?\)"
+    # r_search = r"\[.*?\]\(.*?://.*?\..*?\..*?\)"
+    r_search = r"\[.*?\]\(.*?\)"
     matches = re.findall(r_search, text)
     descriptions = list(map(lambda x: re.findall(r"\[.*?\]", x)[0], matches))
     links = list(map(lambda x: re.findall(r"\(.*?\)", x)[0], matches))
@@ -71,7 +76,8 @@ def extract_markdown_links(text):
 def split_nodes_image(old_nodes):
     # text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
     new_nodes = []
-    r_search = r"!\[.*?\]\(.*?://.*?\..*?\..*?\)"
+    # r_search = r"!\[.*?\]\(.*?://.*?\..*?\..*?\)"
+    r_search = r"!\[.*?\]\(.*?\)"
     for node in old_nodes:
         matches = re.findall(r_search, node.text)
         arr = re.split(r_search, node.text)
@@ -88,7 +94,8 @@ def split_nodes_image(old_nodes):
 def split_nodes_link(old_nodes):
     # text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
     new_nodes = []
-    r_search = r"\[.*?\]\(.*?://.*?\..*?\)"
+    # r_search = r"\[.*?\]\(.*?://.*?\..*?\)"
+    r_search = r"\[.*?\]\(.*?\)"
     for node in old_nodes:
         matches = re.findall(r_search, node.text)
         arr = re.split(r_search, node.text)
@@ -145,37 +152,45 @@ def block_to_blocktype(block):
     return "paragraph"
 
 def markdown_to_html_node(markdown):
+    child_nodes = []
     blocks = markdown_to_blocks(markdown)
     for block in blocks:
         blocktype = block_to_blocktype(block)
+        node = {}
         match blocktype:
             case "heading":
                 headings = re.search(r"^#{1,6}", block).group(0)
                 tag = f"h{len(headings)}" 
                 text = re.sub("^#{1,6}", "", block).strip()
                 children = None
+                child_nodes.append(LeafNode(text, tag, None))
             case "quote":
                 tag = "blockquote"
                 text = block.replace(">", "").strip()
                 children = None
+                child_nodes.append(LeafNode(text, tag, None))
             case "code":
                 tag = "code"
                 text = block.strip("```")
                 props = None
                 children = None
+                child_nodes.append(LeafNode(text, tag, None))
             case "unordered_list":
                 tag = "ul"
                 text = None
                 children = text_to_children_unordered_list(block)
+                child_nodes.append(ParentNode(tag, children, None))
             case "ordered_list":
                 tag = "ol"
                 text = None
                 children = text_to_children_ordered_list(block)
+                child_nodes.append(ParentNode(tag, children, None))
             case "paragraph":
                 tag = "div"
                 text = None
                 children = [text_to_children_paragraph(block)]
-    return HtmlNode(tag, text, children, None)
+                child_nodes.append(ParentNode(tag, children, None))
+    return ParentNode("div", child_nodes)
 
     # split markdown into blocks with existing function
     # loop over each block
@@ -191,9 +206,9 @@ def text_to_children_unordered_list(text):
     lines = text.split('\n')
     newlines = []
     for line in lines:
-        textnode = text_to_textnodes(line.lstrip("- ").lstrip("* "))[0]
-        child = text_node_to_html_node(textnode)
-        parent = HtmlNode("li", None, [child], None)
+        textnodes = text_to_textnodes(line.lstrip("- ").lstrip("* "))
+        children = list(map(text_node_to_html_node, textnodes))
+        parent = ParentNode("li", children)
         newlines.append(parent)
     return newlines
 
@@ -201,20 +216,46 @@ def text_to_children_ordered_list(text):
     lines = text.split('\n')
     newlines = []
     for line in lines:
-        textnode = text_to_textnodes(re.sub(r"^\d. ", "", line))[0]
-        child = text_node_to_html_node(textnode)
-        parent = HtmlNode("li", None, [child], None)
+        textnodes = text_to_textnodes(re.sub(r"^\d. ", "", line))
+        children = list(map(text_node_to_html_node, textnodes))
+        parent = ParentNode("li", children)
         newlines.append(parent)
     return newlines
 
 def text_to_children_paragraph(text):
     textnodes = text_to_textnodes(text)
+    print("textnodes")
+    print(textnodes)
     htmlnodes = map(text_node_to_html_node, textnodes)
-    # print(list(htmlnodes))
-    # textnode = text_to_textnodes(text)[0]
-    # htmlnode = text_node_to_html_node(textnode)
-    return HtmlNode(tag="p", children=list(htmlnodes))
+    return ParentNode("p", list(htmlnodes))
 
-
-
+def extract_title(markdown):
+    heading = re.search(r"^#.*", markdown).group(0)
+    text = re.sub("^#", "", heading).strip()
+    return text
     
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    file = open(from_path)
+    file_content = file.read()
+    file.close()
+    template = open(template_path)
+    template_content = template.read()
+    template.close()
+    html = markdown_to_html_node(file_content).to_html()
+    title = extract_title(file_content)
+    template_content = template_content.replace("{{ Content }}", html).replace("{{ Title }}", title)
+    
+    destlist = dest_path.split("/")
+    # dest = "/".join(dest_path.split("/")[0:-1])
+    dest = "/".join(destlist[0:-1])
+    destfile = dest[-1]
+
+    if not exists(dest):
+        makedirs(dest)
+
+    newfile = open(dest_path, "x")
+    newfile.write(template_content)
+    newfile.close()
+    
+

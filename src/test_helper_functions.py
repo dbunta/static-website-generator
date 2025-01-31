@@ -312,83 +312,89 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
     def test_markdown_to_html_nodes_ul(self):
         markdown = "* test\n*test2\n* test3"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "ul")
-        self.assertEqual(actual.value, None)
-        self.assertEqual(actual.props, None)
-        self.assertEqual(actual.children[0].tag, "li")
-        self.assertEqual(actual.children[0].children[0].tag, None)
-        self.assertEqual(actual.children[0].children[0].value, "test")
-        self.assertEqual(actual.children[1].children[0].value, "test2")
-        self.assertEqual(actual.children[2].children[0].value, "test3")
+        self.assertEqual(actual.tag, "div")
+        self.assertEqual(actual.children[0].tag, "ul")
+        self.assertEqual(actual.children[0].children[0].tag, "li")
+        self.assertEqual(actual.children[0].children[0].children[0].value, "test")
+        self.assertEqual(actual.children[0].children[1].children[0].value, "test2")
+        self.assertEqual(actual.children[0].children[2].children[0].value, "test3")
 
     def test_markdown_to_html_nodes_ol(self):
         markdown = "1. test\n2. test2\n3. test3"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "ol")
-        self.assertEqual(actual.value, None)
-        self.assertEqual(actual.props, None)
-        self.assertEqual(actual.children[0].tag, "li")
-        self.assertEqual(actual.children[0].children[0].tag, None)
-        self.assertEqual(actual.children[0].children[0].value, "test")
-        self.assertEqual(actual.children[1].children[0].value, "test2")
-        self.assertEqual(actual.children[2].children[0].value, "test3")
+        self.assertEqual(actual.children[0].tag, "ol")
+        self.assertEqual(actual.children[0].value, None)
+        self.assertEqual(actual.children[0].props, None)
+        self.assertEqual(actual.children[0].children[0].tag, "li")
+        # self.assertEqual(actual.children[0].children[0].tag, None)
+        self.assertEqual(actual.children[0].children[0].children[0].value, "test")
+        self.assertEqual(actual.children[0].children[1].children[0].value, "test2")
+        self.assertEqual(actual.children[0].children[2].children[0].value, "test3")
 
     def test_markdown_to_html_nodes_p(self):
         markdown = "this is a paragraph"
         actual = markdown_to_html_node(markdown)
         self.assertEqual(actual.tag, "div")
-        self.assertEqual(actual.value, None)
-        self.assertEqual(actual.props, None)
-        self.assertEqual(actual.children[0].tag, "p")
-        self.assertEqual(actual.children[0].value, None)
-        self.assertEqual(actual.children[0].children[0].tag, None)
-        self.assertEqual(actual.children[0].children[0].value, "this is a paragraph")
+        self.assertEqual(actual.children[0].tag, "div")
+        self.assertEqual(actual.children[0].children[0].tag, "p")
+        self.assertEqual(actual.children[0].children[0].value, None)
+        self.assertEqual(actual.children[0].children[0].children[0].tag, None)
+        self.assertEqual(actual.children[0].children[0].children[0].value, "this is a paragraph")
 
     def test_markdown_to_html_nodes_code(self):
         markdown = "```this is code```"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "code")
-        self.assertEqual(actual.value, "this is code")
-        self.assertEqual(actual.props, None)
-        self.assertEqual(actual.children, None)
+        self.assertEqual(actual.children[0].tag, "code")
+        self.assertEqual(actual.children[0].value, "this is code")
+        self.assertEqual(actual.children[0].props, None)
+        self.assertEqual(actual.children[0].children, None)
 
     def test_markdown_to_html_nodes_quote(self):
         markdown = "> this is a quote\n> and more quoting"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "blockquote")
-        self.assertEqual(actual.value, "this is a quote\n and more quoting")
-        self.assertEqual(actual.props, None)
-        self.assertEqual(actual.children, None)
+        self.assertEqual(actual.children[0].tag, "blockquote")
+        self.assertEqual(actual.children[0].value, "this is a quote\n and more quoting")
+        self.assertEqual(actual.children[0].props, None)
+        self.assertEqual(actual.children[0].children, None)
 
     def test_markdown_to_html_nodes_heading(self):
         markdown = "# this is h1"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "h1")
-        self.assertEqual(actual.value, "this is h1")
-        self.assertEqual(actual.props, None)
-        self.assertEqual(actual.children, None)
+        self.assertEqual(actual.children[0].tag, "h1")
+        self.assertEqual(actual.children[0].value, "this is h1")
+        self.assertEqual(actual.children[0].props, None)
+        self.assertEqual(actual.children[0].children, None)
         markdown = "## this is h2"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "h2")
-        self.assertEqual(actual.value, "this is h2")
+        self.assertEqual(actual.children[0].tag, "h2")
+        self.assertEqual(actual.children[0].value, "this is h2")
         markdown = "### this is h3"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "h3")
-        self.assertEqual(actual.value, "this is h3")
+        self.assertEqual(actual.children[0].tag, "h3")
+        self.assertEqual(actual.children[0].value, "this is h3")
 
     def test_markdown_to_html_nodes_bold(self):
         markdown = "these are **bold** and *italic*"
         actual = markdown_to_html_node(markdown)
-        self.assertEqual(actual.tag, "div")
-        self.assertEqual(actual.value, None)
-        self.assertEqual(actual.props, None)
-        self.assertEqual(actual.children[0].tag, "p")
+        self.assertEqual(actual.children[0].tag, "div")
         self.assertEqual(actual.children[0].value, None)
-        self.assertEqual(actual.children[0].children[0].tag, None)
-        self.assertEqual(actual.children[0].children[0].value, "these are ")
-        self.assertEqual(actual.children[0].children[1].tag, "b")
-        self.assertEqual(actual.children[0].children[1].value, "bold")
-        self.assertEqual(actual.children[0].children[2].tag, None)
-        self.assertEqual(actual.children[0].children[2].value, " and ")
-        self.assertEqual(actual.children[0].children[3].tag, "i")
-        self.assertEqual(actual.children[0].children[3].value, "italic")
+        self.assertEqual(actual.children[0].props, None)
+        self.assertEqual(actual.children[0].children[0].tag, "p")
+        self.assertEqual(actual.children[0].children[0].value, None)
+        self.assertEqual(actual.children[0].children[0].children[0].tag, None)
+        self.assertEqual(actual.children[0].children[0].children[0].value, "these are ")
+        self.assertEqual(actual.children[0].children[0].children[1].tag, "b")
+        self.assertEqual(actual.children[0].children[0].children[1].value, "bold")
+        self.assertEqual(actual.children[0].children[0].children[2].tag, None)
+        self.assertEqual(actual.children[0].children[0].children[2].value, " and ")
+        self.assertEqual(actual.children[0].children[0].children[3].tag, "i")
+        self.assertEqual(actual.children[0].children[0].children[3].value, "italic")
+
+    def test_extract_title(self):
+        markdown = "# this is the title\nthis is not part of the title"
+        actual = extract_title(markdown)
+        self.assertEqual(actual, "this is the title")
+
+
+        
+        
