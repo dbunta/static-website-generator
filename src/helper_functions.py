@@ -2,8 +2,8 @@ import re
 from textnode import *
 from leafnode import *
 from parentnode import *
-from os import makedirs
-from os.path import exists, join
+from os import makedirs, listdir
+from os.path import exists, join, isfile
 
 
 def text_node_to_html_node(text_node):
@@ -224,8 +224,6 @@ def text_to_children_ordered_list(text):
 
 def text_to_children_paragraph(text):
     textnodes = text_to_textnodes(text)
-    print("textnodes")
-    print(textnodes)
     htmlnodes = map(text_node_to_html_node, textnodes)
     return ParentNode("p", list(htmlnodes))
 
@@ -258,4 +256,15 @@ def generate_page(from_path, template_path, dest_path):
     newfile.write(template_content)
     newfile.close()
     
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    dirs = listdir(dir_path_content)
+    print(dirs)
+    for dir in dirs:
+        dirpath = join(dir_path_content, dir)
+        if not isfile(dirpath):
+            generate_pages_recursive(dirpath, template_path, dest_dir_path)
+        else:
+            filename = dir.split(".")[0] + ".html"
+            filepath = join(dest_dir_path, "/".join(dir_path_content.split("/")[2:]), filename)
+            generate_page(dirpath, template_path, filepath)
 
