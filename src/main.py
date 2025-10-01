@@ -1,3 +1,4 @@
+import sys
 from textnode import *
 from htmlnode import *
 from helper_functions import *
@@ -6,14 +7,15 @@ from os.path import exists, isfile, join
 from shutil import rmtree, copy
 
 def main():
+    base_path = sys.argv[1] if len(sys.argv[1]) == 2 else "/"
     copy_source_to_destination()
     # generate_page("./content/index.md", "./template.html", "./public/index.html")
-    generate_pages_recursive("./content", "./template.html", "./public")
+    generate_pages_recursive("./content", "./template.html", "./docs", base_path)
 
 # delete everything in public dir
 # copy all files/directories from static to public 
 # log src and dest file paths while copying
-def copy_source_to_destination(src="static",dst="public"):
+def copy_source_to_destination(src="static",dst="docs"):
     # delete public and its contents
     if exists(dst):
         print(f"deleting {dst} and its contents")
