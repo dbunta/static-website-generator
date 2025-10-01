@@ -113,7 +113,7 @@ def text_to_textnodes(text):
     # This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)
     text_nodes = [TextNode(text, TextType.NORMAL)]
     text_nodes = split_nodes_delimiter(text_nodes, "**", TextType.BOLD)
-    text_nodes = split_nodes_delimiter(text_nodes, "*", TextType.ITALIC)
+    text_nodes = split_nodes_delimiter(text_nodes, "_", TextType.ITALIC)
     text_nodes = split_nodes_delimiter(text_nodes, "`", TextType.CODE)
     text_nodes = split_nodes_image(text_nodes)
     text_nodes = split_nodes_link(text_nodes)
